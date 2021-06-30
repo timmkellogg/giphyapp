@@ -1,0 +1,9 @@
+.gifs-container {
+    display: flex;
+    flex-wrap: wrap;    
+}
+
+.gif-container {
+    display: grid;
+    align-content: center;
+}
