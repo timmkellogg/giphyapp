@@ -6,10 +6,15 @@ import {
   NavItem,
   NavLink
 } from 'reactstrap';
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { useAuth } from './ProvideAuth';
 
-const Navi = () => (
-      <Navbar color="light" light expand="md">
+function Navi() {
+  let history = useHistory();
+  let auth = useAuth();
+
+  return (
+    <Navbar color="light" light expand="md">
         <NavbarBrand tag={Link} to='/'>Giphy App</NavbarBrand>
         <Collapse isOpen={true} navbar>
           <Nav className="mr-auto" navbar>
@@ -19,10 +24,22 @@ const Navi = () => (
             <NavItem>
               <NavLink tag={Link} to='/saved'>Saved</NavLink>
             </NavItem>
+            <NavItem>
+              {auth.user ?
+                <NavLink onClick={() => {
+                  auth.signout(() => history.push('/'));
+                }}>
+                  Log out
+                </NavLink>
+                :
+                <NavLink tag={Link} to='/login'>Log in</NavLink>
+              }
+            </NavItem>
           </Nav>
         </Collapse>
       </Navbar>
-);
+  )
+}
 
 
 export default Navi;

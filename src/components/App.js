@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import {
-    BrowserRouter as Router,
+    HashRouter as Router,
     Switch,
     Route,
-  } from "react-router-dom";
+} from "react-router-dom";
 import axios from 'axios';
 
+import { ProvideAuth } from './ProvideAuth';
+import PrivateRoute from './PrivateRoute';
+import LoginPage from './LoginPage';
 import Navi from './Navi';
 import GifViewer from './GifViewer';
 
@@ -39,7 +42,7 @@ function App() {
     };
 
     const handleSearchGifs = async () => {
-        if(!gifInput) return;
+        if (!gifInput) return;
 
         const res = await axios.get(`https://api.giphy.com/v1/gifs/search?&q=${gifInput}&api_key=APIKEYGOESHERE&rating=g&limit=10`);
 
@@ -47,33 +50,40 @@ function App() {
     };
 
     return (
-        <Router>
-            <div>
-                <Navi />
+        <ProvideAuth>
+            <Router>
+                <div>
+                    <Navi />
 
-                <Switch>
-                    <Route path='/saved'>
-                        <GifViewer 
-                            gifs={savedGifs}
-                            buttonAction={handleRemoveGif}
-                            buttonText={'remove'}
-                        />
-                    </Route>
-                    <Route path='/search'>
-                        <input onChange={handleInput} value={gifInput}  />
-                        <button onClick={handleSearchGifs}>search</button>
-                        <GifViewer 
-                            gifs={gifs}
-                            buttonAction={handleSaveGif}
-                            buttonText={'save'}
-                        />
-                    </Route>
-                    <Route path='/'>
-                        <h1>Homepage</h1>
-                    </Route>
-                </Switch>  
-            </div>
-        </Router>
+                    <Switch>
+                        <PrivateRoute path='/saved'>
+                            <GifViewer
+                                gifs={savedGifs}
+                                buttonAction={handleRemoveGif}
+                                buttonText={'remove'}
+                            />
+                        </PrivateRoute>
+                        <PrivateRoute path='/search'>
+                            <input onChange={handleInput} value={gifInput} />
+                            <button onClick={handleSearchGifs}>search</button>
+                            <GifViewer
+                                gifs={gifs}
+                                buttonAction={handleSaveGif}
+                                buttonText={'save'}
+                            />
+                        </PrivateRoute>
+
+                        <Route path='/login' exact>
+                            <LoginPage />
+                        </Route>
+
+                        <Route path='/'>
+                            <h1>Homepage</h1>
+                        </Route>
+                    </Switch>
+                </div>
+            </Router>
+        </ProvideAuth>
     );
 }
 
